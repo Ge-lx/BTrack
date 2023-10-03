@@ -16,7 +16,7 @@ add_library (
 
 source_group (Source src)
 
-target_compile_definitions (BTrack PUBLIC -DUSE_KISS_FFT)
+target_compile_definitions (BTrack PUBLIC -DUSE_FFTW)
 
 # Link against libsamplerate
 target_link_libraries(BTrack PRIVATE ${LIBSAMPLERATE_LIBRARIES})
