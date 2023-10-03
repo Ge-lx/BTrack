@@ -49,7 +49,7 @@ public:
      * @param hopSize the hop size in audio samples
      * @param frameSize the frame size in audio samples
      */
-    BTrack (int hopSize, int frameSize);
+    BTrack (int samplingFrequency, int hopSize, int frameSize);
     
     /** Destructor */
     ~BTrack();
@@ -206,6 +206,7 @@ private:
     bool tempoFixed;                        /**< indicates whether the tempo should be fixed or not */
     bool beatDueInFrame;                    /**< indicates whether a beat is due in the current frame */
     int FFTLengthForACFCalculation;         /**< the FFT length for the auto-correlation function calculation */
+    int samplingFrequency;
     
 #ifdef USE_FFTW
     fftw_plan acfForwardFFT;                /**< forward fftw plan for calculating auto-correlation function */

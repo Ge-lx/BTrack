@@ -28,21 +28,24 @@
 
 //=======================================================================
 BTrack::BTrack()
- :  odf (512, 1024, ComplexSpectralDifferenceHWR, HanningWindow)
+ :  odf (512, 1024, ComplexSpectralDifferenceHWR, HanningWindow),
+ 	samplingFrequency(44100)
 {
     initialise (512);
 }
 
 //=======================================================================
 BTrack::BTrack (int hop)
- :  odf (hop, 2 * hop, ComplexSpectralDifferenceHWR, HanningWindow)
+ :  odf (hop, 2 * hop, ComplexSpectralDifferenceHWR, HanningWindow),
+ 	samplingFrequency(44100)
 {
     initialise (hop);
 }
 
 //=======================================================================
-BTrack::BTrack (int hop, int frame)
- : odf (hop, frame, ComplexSpectralDifferenceHWR, HanningWindow)
+BTrack::BTrack (int samplingFrequency, int hop, int frame)
+ :	odf (hop, frame, ComplexSpectralDifferenceHWR, HanningWindow),
+ 	samplingFrequency(samplingFrequency)
 {
     initialise (hop);
 }
@@ -151,7 +154,7 @@ void BTrack::setHopSize (int hop)
 {	
 	hopSize = hop;
 	onsetDFBufferSize = (512 * 512) / hopSize;		// calculate df buffer size
-	beatPeriod = round (60 / ((((double) hopSize) / 44100) * 120.));
+	beatPeriod = round (60 / ((((double) hopSize) / ((double) samplingFrequency)) * 120.));
 
     // set size of onset detection function buffer
     onsetDF.resize (onsetDFBufferSize);
@@ -274,7 +277,7 @@ void BTrack::setTempo (double tempo)
 	/////////// CUMULATIVE SCORE ARTIFICAL TEMPO UPDATE //////////////////
 	
 	// calculate new beat period
-	int newBeatPeriod = (int) round (60 / ((((double) hopSize) / 44100) * tempo));
+	int newBeatPeriod = (int) round (60 / ((((double) hopSize) / samplingFrequency) * tempo));
 	
 	int k = 1;
     
@@ -372,7 +375,7 @@ void BTrack::resampleOnsetDetectionFunction()
 //=======================================================================
 void BTrack::calculateTempo()
 {
-    double tempoToLagFactor = 60. * 44100. / 512.;
+    double tempoToLagFactor = 60. * ((double) samplingFrequency) / 512.;
     
 	// adaptive threshold on input
 	adaptiveThreshold (resampledOnsetDF);
@@ -432,10 +435,10 @@ void BTrack::calculateTempo()
 		prevDelta[j] = delta[j];
 	}
 	
-	beatPeriod = round ((60.0 * 44100.0) / (((2 * maxIndex) + 80) * ((double) hopSize)));
+	beatPeriod = 0.5 * round ((60.0 * ((double) samplingFrequency)) / (((2 * maxIndex) + 80) * ((double) hopSize)));
 	
 	if (beatPeriod > 0)
-        estimatedTempo = 60.0 / ((((double) hopSize) / 44100.0) * beatPeriod);
+        estimatedTempo = 60.0 / ((((double) hopSize) / samplingFrequency) * 2 * beatPeriod);
 }
 
 //=======================================================================
