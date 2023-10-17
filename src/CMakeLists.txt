@@ -3,7 +3,7 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/../libs/kiss_fft130)
 include_directories (/opt/homebrew/include)
 
 # Find libsamplerate
-find_library(LIBSAMPLERATE_LIBRARIES NAMES samplerate)
+find_package(SampleRate REQUIRED)
 
 add_library (
     BTrack STATIC
@@ -19,4 +19,4 @@ source_group (Source src)
 target_compile_definitions (BTrack PUBLIC -DUSE_FFTW)
 
 # Link against libsamplerate
-target_link_libraries(BTrack PRIVATE ${LIBSAMPLERATE_LIBRARIES})
+target_link_libraries(BTrack PRIVATE SampleRate::samplerate)
